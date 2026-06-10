@@ -1,5 +1,6 @@
 .env
 .mcp_index/
+BUGS_LEARNINGS.md
 __pycache__/
 *.pyc
 *.pyo
