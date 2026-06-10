@@ -2,7 +2,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
+# Load .env from the project directory regardless of where Python was launched from
+load_dotenv(Path(__file__).parent / ".env")
 
 _raw_root = os.getenv("WORKSPACE_ROOT", str(Path.cwd()))
 WORKSPACE_ROOT: Path = Path(_raw_root).resolve()
