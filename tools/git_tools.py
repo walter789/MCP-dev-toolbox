@@ -15,6 +15,7 @@ async def _run_git(*args: str, cwd: Optional[Path] = None) -> tuple[str, str, in
         "git",
         *args,
         cwd=str(work_dir),
+        stdin=asyncio.subprocess.DEVNULL,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
     )

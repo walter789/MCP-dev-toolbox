@@ -13,6 +13,7 @@ async def _run_git(*args: str) -> str:
         "git",
         *args,
         cwd=str(_root),
+        stdin=asyncio.subprocess.DEVNULL,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
     )
