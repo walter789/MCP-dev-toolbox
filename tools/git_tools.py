@@ -7,11 +7,14 @@ from mcp.server.fastmcp import FastMCP
 from config import WORKSPACE_ROOT
 
 
-async def _run_git(*args: str, cwd: Path = WORKSPACE_ROOT) -> tuple[str, str, int]:
+async def _run_git(*args: str, cwd: Optional[Path] = None) -> tuple[str, str, int]:
+    # Import inside function to always read the live value, not a captured default
+    from config import WORKSPACE_ROOT as _root
+    work_dir = cwd or _root
     proc = await asyncio.create_subprocess_exec(
         "git",
         *args,
-        cwd=str(cwd),
+        cwd=str(work_dir),
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
     )

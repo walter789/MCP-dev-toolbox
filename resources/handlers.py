@@ -8,10 +8,11 @@ from config import WORKSPACE_ROOT
 
 
 async def _run_git(*args: str) -> str:
+    from config import WORKSPACE_ROOT as _root
     proc = await asyncio.create_subprocess_exec(
         "git",
         *args,
-        cwd=str(WORKSPACE_ROOT),
+        cwd=str(_root),
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
     )
