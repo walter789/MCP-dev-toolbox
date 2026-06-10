@@ -6,17 +6,20 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends git \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies first (layer cache — only re-runs if requirements change)
 COPY requirements.txt .
+
+# Install CPU-only torch first to avoid pulling 3GB+ of CUDA GPU libraries.
+# The --index-url flag tells pip to fetch torch from the lightweight CPU wheel repo.
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
+
+# Install remaining dependencies (sentence-transformers, mcp, etc.)
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application source
 COPY . .
 
 # Pre-download the embedding model so the container doesn't fetch it at runtime
 RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
 
-# Railway injects PORT; default to 8000 locally
 ENV PORT=8000
 ENV TRANSPORT=sse
 ENV HOST=0.0.0.0

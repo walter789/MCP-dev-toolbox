@@ -2,12 +2,17 @@ import os
 
 from mcp.server.fastmcp import FastMCP
 
+_host = os.getenv("HOST", "0.0.0.0")
+_port = int(os.getenv("PORT", "8000"))
+
 mcp = FastMCP(
     "dev-toolbox",
     instructions=(
         "A developer utility server for analyzing local codebases. "
         "Provides git history, file inspection, code search, and structured prompt templates."
     ),
+    host=_host,
+    port=_port,
 )
 
 # Tools, resources, and prompts are registered by importing their modules.
@@ -29,7 +34,7 @@ if __name__ == "__main__":
         # HTTP/SSE mode — used when deployed to a cloud host (Railway, Render, etc.)
         host = os.getenv("HOST", "0.0.0.0")
         port = int(os.getenv("PORT", "8000"))
-        mcp.run(transport="sse", host=host, port=port)
+        mcp.run(transport="sse")
     else:
         # stdio mode — used for local Claude Desktop / Cursor integration
         mcp.run(transport="stdio")
