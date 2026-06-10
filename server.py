@@ -1,3 +1,5 @@
+import os
+
 from mcp.server.fastmcp import FastMCP
 
 mcp = FastMCP(
@@ -22,4 +24,12 @@ resource_handlers.register(mcp)
 prompt_templates.register(mcp)
 
 if __name__ == "__main__":
-    mcp.run()
+    transport = os.getenv("TRANSPORT", "stdio")
+    if transport == "sse":
+        # HTTP/SSE mode — used when deployed to a cloud host (Railway, Render, etc.)
+        host = os.getenv("HOST", "0.0.0.0")
+        port = int(os.getenv("PORT", "8000"))
+        mcp.run(transport="sse", host=host, port=port)
+    else:
+        # stdio mode — used for local Claude Desktop / Cursor integration
+        mcp.run(transport="stdio")

@@ -8,7 +8,7 @@ A developer utility MCP server that exposes git analysis, file inspection, and c
 
 | Primitive | Count | What's included |
 |-----------|-------|-----------------|
-| **Tools** | 10 | Git history, diffs, blame · File search, TODO finder, stats · LOC counter, long-function detector |
+| **Tools** | 12 | Git history, diffs, blame · File search, TODO finder, stats · LOC counter, long-function detector · **Semantic search (embedding-based)** |
 | **Resources** | 3 | `file://{path}` · `git://status` · `git://log` |
 | **Prompts** | 4 | Code review · Commit message · Explain codebase · Debug guide |
 
@@ -108,6 +108,64 @@ Restart Claude Desktop. You'll see the toolbox icon appear in the toolbar.
 | `commit_message` | Conventional commit from a diff summary | `diff_summary` |
 | `explain_codebase` | Onboarding walkthrough from an entry point | `entry_point` |
 | `debug_guide` | Systematic debugging template | `error_message`, `file_path` |
+
+---
+
+## Semantic Search
+
+Unlike `search_in_files` (regex), semantic search finds code **by meaning**.
+
+```
+# First, build the index (once per project)
+→ build_index
+
+# Then search naturally
+→ semantic_search("user authentication logic")
+→ semantic_search("database connection setup")
+→ semantic_search("error handling in API calls")
+```
+
+The index is stored under `.mcp_index/` (gitignored) and persists across sessions.
+Re-run `build_index` after major code changes.
+
+Model used: `all-MiniLM-L6-v2` (~80 MB, runs fully locally — no API key needed).
+
+---
+
+## Cloud Deploy (Railway)
+
+The server supports two transports controlled by the `TRANSPORT` env var:
+
+| Mode | Transport | When to use |
+|------|-----------|-------------|
+| `TRANSPORT=stdio` (default) | stdin/stdout | Local Claude Desktop / Cursor |
+| `TRANSPORT=sse` | HTTP + SSE | Cloud deployment |
+
+### Deploy to Railway (free tier)
+
+1. Push this repo to GitHub
+2. Go to [railway.app](https://railway.app) → New Project → Deploy from GitHub repo
+3. Railway auto-detects the `Dockerfile` and builds it
+4. Set these environment variables in Railway dashboard:
+   ```
+   TRANSPORT=sse
+   WORKSPACE_ROOT=/app
+   ```
+5. Railway gives you a public URL like `https://mcp-dev-toolbox-production.up.railway.app`
+
+### Connect Claude Desktop to the cloud server
+
+```json
+{
+  "mcpServers": {
+    "dev-toolbox-cloud": {
+      "url": "https://your-app.up.railway.app/sse"
+    }
+  }
+}
+```
+
+No `command` or `args` needed — Claude Desktop connects over HTTP directly.
 
 ---
 
