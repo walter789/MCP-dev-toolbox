@@ -151,21 +151,41 @@ The server supports two transports controlled by the `TRANSPORT` env var:
    TRANSPORT=sse
    WORKSPACE_ROOT=/app
    ```
-5. Railway gives you a public URL like `https://mcp-dev-toolbox-production.up.railway.app`
+5. Railway gives you a public URL — copy it from **Settings → Domains**. It includes a
+   generated hash suffix: `https://mcp-dev-toolbox-production-<hash>.up.railway.app`
+
+> **Note:** Railway ships your source as a zip archive (not `git clone`), so `.git` is
+> never in the build context. The Dockerfile handles this by running `git fetch` at build
+> time, giving the container the last 50 commits of history for git tools to work.
 
 ### Connect Claude Desktop to the cloud server
+
+Claude Desktop requires `mcp-remote` as a bridge for SSE servers:
 
 ```json
 {
   "mcpServers": {
     "dev-toolbox-cloud": {
-      "url": "https://your-app.up.railway.app/sse"
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://your-app-production-<hash>.up.railway.app/sse"
+      ]
     }
   }
 }
 ```
 
-No `command` or `args` needed — Claude Desktop connects over HTTP directly.
+Replace the URL with your exact Railway domain. Do **not** add `--transport sse` —
+it is not a valid `mcp-remote` flag.
+
+Verify the server is reachable before configuring Claude Desktop by opening
+`https://your-url/sse` in a browser. A healthy server responds with:
+```
+event: endpoint
+data: /messages/?session_id=...
+```
 
 ---
 
@@ -205,11 +225,16 @@ mcp-dev-toolbox/
 ├── tools/
 │   ├── git_tools.py       # 4 git tools (async subprocess)
 │   ├── file_tools.py      # 4 file analysis tools
-│   └── code_tools.py      # 2 code analysis tools
+│   ├── code_tools.py      # 2 code analysis tools
+│   └── semantic_search.py # 2 semantic search tools (build_index, semantic_search)
+├── indexer/
+│   ├── chunker.py         # Splits files into CodeChunk objects by function/class
+│   └── embedder.py        # Embeds chunks with all-MiniLM-L6-v2, cosine similarity search
 ├── resources/
 │   └── handlers.py        # 3 resource handlers
 ├── prompts/
 │   └── templates.py       # 4 prompt templates
+├── Dockerfile             # CPU-only torch; fetches git history at build time
 ├── requirements.txt
 └── .env.example
 ```
