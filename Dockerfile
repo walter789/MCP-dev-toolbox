@@ -18,7 +18,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Allow git to operate on /app regardless of file ownership (safe.directory)
-RUN git config --global --add safe.directory /app
+RUN git config --system --add safe.directory /app
 
 # Pre-download the embedding model so the container doesn't fetch it at runtime
 RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
