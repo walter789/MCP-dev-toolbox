@@ -2,6 +2,8 @@
 
 **Ask your AI agent about your codebase in plain English — and get answers grounded in your actual code and git history.**
 
+![demo](docs/demo.gif)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 ![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)
 ![MCP](https://img.shields.io/badge/MCP-server-8A2BE2.svg)
