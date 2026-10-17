@@ -1,4 +1,4 @@
-mcp[cli]>=1.0.0
+mcp[cli]>=1.0.0,<2  # 2.x renamed FastMCP; server.py targets the 1.x API
 python-dotenv>=1.0.0
 sentence-transformers>=3.0.0
 numpy>=1.26.0
