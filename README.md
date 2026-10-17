@@ -1,6 +1,33 @@
 # mcp-dev-toolbox
 
-A developer utility MCP server that exposes git analysis, file inspection, and code search capabilities to any MCP client (Claude Desktop, Cursor, etc.).
+**Ask your AI agent about your codebase in plain English — and get answers grounded in your actual code and git history.**
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)
+![MCP](https://img.shields.io/badge/MCP-server-8A2BE2.svg)
+![Runs locally](https://img.shields.io/badge/semantic%20search-100%25%20local-orange.svg)
+
+An MCP server for Claude Desktop, Claude Code, Cursor and any other MCP client. Its headline feature is **local semantic code search**: find code *by meaning* ("where do we validate auth tokens?") using on-device embeddings — no API key, no code leaving your machine. Alongside it you get git history, diffs, blame, file inspection, and ready-made prompts for code review and commit messages.
+
+### Why use it
+
+- 🔍 **Semantic search, fully local** — `all-MiniLM-L6-v2` embeddings indexed per function/class, stored on disk, no external API calls.
+- 🕰️ **Git-aware** — the agent can read log, diff, status and blame instead of guessing what changed.
+- 🔒 **Sandboxed by design** — every path is confined to `WORKSPACE_ROOT`; git runs without a shell.
+- 🧩 **Uses the whole MCP spec** — 12 tools, 3 resources and 4 prompts, not just tools.
+- ☁️ **Local or cloud** — stdio for desktop clients, SSE + Dockerfile for one-click Railway deploys.
+
+### Quick start
+
+```bash
+git clone https://github.com/walter789/MCP-dev-toolbox.git
+cd MCP-dev-toolbox
+pip install -r requirements.txt
+```
+
+Then point your MCP client at `server.py` with `WORKSPACE_ROOT` set to the project you want to explore (full config below), and ask:
+
+> *"Build the index, then find where we handle database connection errors."*
 
 ---
 
@@ -19,8 +46,8 @@ A developer utility MCP server that exposes git analysis, file inspection, and c
 ### 1. Clone and install
 
 ```bash
-git clone https://github.com/your-username/mcp-dev-toolbox.git
-cd mcp-dev-toolbox
+git clone https://github.com/walter789/MCP-dev-toolbox.git
+cd MCP-dev-toolbox
 pip install -r requirements.txt
 ```
 
@@ -59,6 +86,14 @@ Open your Claude Desktop config (`claude_desktop_config.json`) and add:
 
 Restart Claude Desktop. You'll see the toolbox icon appear in the toolbar.
 
+**Claude Code:**
+
+```bash
+claude mcp add dev-toolbox -e WORKSPACE_ROOT=/absolute/path/to/your/project -- python /absolute/path/to/MCP-dev-toolbox/server.py
+```
+
+**Cursor:** add the same `mcpServers` block to `~/.cursor/mcp.json` (or `.cursor/mcp.json` in a project).
+
 ---
 
 ## Tools Reference
@@ -87,6 +122,13 @@ Restart Claude Desktop. You'll see the toolbox icon appear in the toolbar.
 |------|-------------|----------|
 | `count_lines_by_language` | LOC breakdown by file extension | `path`, `exclude_blank` |
 | `find_long_functions` | Detect functions exceeding a line threshold | `file_path`, `threshold` |
+
+### Semantic Search Tools
+
+| Tool | Description | Key Args |
+|------|-------------|----------|
+| `build_index` | Embed the workspace (per function/class) into a local index | `path` |
+| `semantic_search` | Find code by meaning using natural language | `query`, `top_k` |
 
 ---
 
@@ -236,5 +278,12 @@ mcp-dev-toolbox/
 │   └── templates.py       # 4 prompt templates
 ├── Dockerfile             # CPU-only torch; fetches git history at build time
 ├── requirements.txt
-└── .env.example
+├── .env.example
+└── LICENSE
 ```
+
+---
+
+## License
+
+[MIT](LICENSE) © 2026 Prateek Pal
