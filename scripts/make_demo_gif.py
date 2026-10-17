@@ -46,8 +46,8 @@ SCENES = [
     ("build_index()", lambda: T["build_index"]()),
     ('semantic_search("where are paths checked against the workspace root?", top_k=3)',
      lambda: T["semantic_search"]("where are paths checked against the workspace root?", top_k=3)),
-    ('semantic_search("how are git commands executed", top_k=3)',
-     lambda: T["semantic_search"]("how are git commands executed", top_k=3)),
+    ('semantic_search("how is the embedding model loaded", top_k=3)',
+     lambda: T["semantic_search"]("how is the embedding model loaded", top_k=3)),
     ("git_log(max_count=4)", lambda: T["git_log"](max_count=4)),
 ]
 
@@ -63,7 +63,8 @@ ACCENT, PROMPT, HIT = (130, 170, 255), (126, 211, 150), (240, 190, 110)
 
 
 def _font():
-    for p in ("C:/Windows/Fonts/consola.ttf",
+    for p in ("C:/Windows/Fonts/CascadiaMono.ttf",
+              "C:/Windows/Fonts/consola.ttf",
               "/System/Library/Fonts/Menlo.ttc",
               "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"):
         if Path(p).exists():
@@ -84,7 +85,7 @@ def _wrap(text):
 
 def _color(line):
     s = line.lstrip()
-    if s.startswith("❯"):
+    if s.startswith("$ "):
         return PROMPT
     if s.startswith("#"):
         return DIM
@@ -118,8 +119,8 @@ def main():
     add(screen, 1400)
 
     for call, run in SCENES:
-        prompt = "❯ " + call
-        for n in range(4, len(prompt) + 4, 4):          # typing effect
+        prompt = "$ " + call  # ASCII prompt renders in every font
+        for n in range(8, len(prompt) + 8, 8):          # typing effect
             add(screen + [prompt[:n]], 40)
         screen = screen + [prompt]
         add(screen, 400)
@@ -127,13 +128,15 @@ def main():
         output = asyncio.run(run())
         for line in _wrap(output.rstrip()):              # reveal output
             screen = screen + [line]
-            add(screen, 70)
+            add(screen, 90)
         screen = screen + [""]
         add(screen, 2200)
 
     out = REPO / "docs" / "demo.gif"
     out.parent.mkdir(exist_ok=True)
-    pal = [f.convert("P", palette=Image.ADAPTIVE, colors=64) for f in frames]
+    # one shared palette lets the GIF store only what changes between frames
+    ref = frames[-1].quantize(colors=32, method=Image.Quantize.MEDIANCUT)
+    pal = [f.quantize(palette=ref, dither=Image.Dither.NONE) for f in frames]
     pal[0].save(out, save_all=True, append_images=pal[1:], duration=durations,
                 loop=0, optimize=True)
     print(f"wrote {out}  ({len(frames)} frames, {out.stat().st_size // 1024} KB)")
