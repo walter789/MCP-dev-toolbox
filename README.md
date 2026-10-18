@@ -2,7 +2,7 @@
 
 **Ask your AI agent about your codebase in plain English — and get answers grounded in your actual code and git history.**
 
-![demo](docs/demo.gif)
+![demo](https://raw.githubusercontent.com/walter789/MCP-dev-toolbox/master/docs/demo.gif)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 ![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)
@@ -264,24 +264,36 @@ data: /messages/?session_id=...
 
 ```
 mcp-dev-toolbox/
-├── server.py              # FastMCP entry point — wires all modules
-├── config.py              # Loads .env, exposes WORKSPACE_ROOT + EXCLUDED_DIRS
-├── tools/
-│   ├── git_tools.py       # 4 git tools (async subprocess)
-│   ├── file_tools.py      # 4 file analysis tools
-│   ├── code_tools.py      # 2 code analysis tools
-│   └── semantic_search.py # 2 semantic search tools (build_index, semantic_search)
-├── indexer/
-│   ├── chunker.py         # Splits files into CodeChunk objects by function/class
-│   └── embedder.py        # Embeds chunks with all-MiniLM-L6-v2, cosine similarity search
-├── resources/
-│   └── handlers.py        # 3 resource handlers
-├── prompts/
-│   └── templates.py       # 4 prompt templates
-├── Dockerfile             # CPU-only torch; fetches git history at build time
+├── server.py                  # Thin launcher: `python server.py` from a source checkout
+├── mcp_dev_toolbox/
+│   ├── server.py              # FastMCP app + main() — wires all modules
+│   ├── config.py              # Loads .env, exposes WORKSPACE_ROOT + EXCLUDED_DIRS
+│   ├── tools/
+│   │   ├── git_tools.py       # 4 git tools (async subprocess)
+│   │   ├── file_tools.py      # 4 file analysis tools
+│   │   ├── code_tools.py      # 2 code analysis tools
+│   │   └── semantic_search.py # 2 semantic search tools (build_index, semantic_search)
+│   ├── indexer/
+│   │   ├── chunker.py         # Code by function/class, Markdown by heading, capped chunk size
+│   │   └── embedder.py        # Embeds chunks with all-MiniLM-L6-v2, cosine similarity search
+│   ├── resources/
+│   │   └── handlers.py        # 3 resource handlers
+│   └── prompts/
+│       └── templates.py       # 4 prompt templates
+├── tests/                     # pytest suite (`python -m pytest`)
+├── scripts/make_demo_gif.py   # Regenerates docs/demo.gif from real tool output
+├── pyproject.toml             # Package metadata + `mcp-dev-toolbox` command
+├── Dockerfile                 # CPU-only torch; fetches git history at build time
 ├── requirements.txt
 ├── .env.example
 └── LICENSE
+```
+
+## Development
+
+```bash
+pip install -e ".[dev]"
+python -m pytest
 ```
 
 ---

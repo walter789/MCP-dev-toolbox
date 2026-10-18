@@ -1,0 +1,43 @@
+import os
+
+from mcp.server.fastmcp import FastMCP
+
+_host = os.getenv("HOST", "0.0.0.0")
+_port = int(os.getenv("PORT", "8000"))
+
+mcp = FastMCP(
+    "dev-toolbox",
+    instructions=(
+        "A developer utility server for analyzing local codebases. "
+        "Provides git history, file inspection, code search, and structured prompt templates."
+    ),
+    host=_host,
+    port=_port,
+)
+
+# Tools, resources, and prompts are registered by importing their modules.
+# Each module calls register(mcp) to attach its handlers.
+from mcp_dev_toolbox.tools import git_tools, file_tools, code_tools, semantic_search  # noqa: E402
+from mcp_dev_toolbox.resources import handlers as resource_handlers                    # noqa: E402
+from mcp_dev_toolbox.prompts import templates as prompt_templates                      # noqa: E402
+
+git_tools.register(mcp)
+file_tools.register(mcp)
+code_tools.register(mcp)
+semantic_search.register(mcp)
+resource_handlers.register(mcp)
+prompt_templates.register(mcp)
+
+def main() -> None:
+    """Console-script entry point (`mcp-dev-toolbox`)."""
+    transport = os.getenv("TRANSPORT", "stdio")
+    if transport == "sse":
+        # HTTP/SSE mode — used when deployed to a cloud host (Railway, Render, etc.)
+        mcp.run(transport="sse")
+    else:
+        # stdio mode — used for local Claude Desktop / Cursor integration
+        mcp.run(transport="stdio")
+
+
+if __name__ == "__main__":
+    main()

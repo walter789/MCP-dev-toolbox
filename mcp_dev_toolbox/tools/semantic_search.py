@@ -1,6 +1,6 @@
 from mcp.server.fastmcp import FastMCP
 
-from indexer import embedder
+from mcp_dev_toolbox.indexer import embedder
 
 
 def register(mcp: FastMCP) -> None:

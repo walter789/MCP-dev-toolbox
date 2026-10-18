@@ -18,7 +18,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 os.environ["WORKSPACE_ROOT"] = str(REPO)  # index this repo itself
 # keep the demo tooling and its output out of the index
-os.environ["EXCLUDED_DIRS"] = ".git,__pycache__,.venv,venv,node_modules,.mcp_index,scripts,docs"
+os.environ["EXCLUDED_DIRS"] = ".git,__pycache__,.venv,venv,node_modules,.mcp_index,scripts,docs,tests"
 sys.path.insert(0, str(REPO))
 
 from PIL import Image, ImageDraw, ImageFont  # noqa: E402
@@ -35,7 +35,7 @@ class _Collector:
             return fn
         return deco
 
-from tools import git_tools, semantic_search  # noqa: E402
+from mcp_dev_toolbox.tools import git_tools, semantic_search  # noqa: E402
 
 mcp = _Collector()
 git_tools.register(mcp)

@@ -6,7 +6,7 @@ from typing import Optional
 
 from mcp.server.fastmcp import FastMCP
 
-from config import EXCLUDED_DIRS, WORKSPACE_ROOT
+from mcp_dev_toolbox.config import EXCLUDED_DIRS, WORKSPACE_ROOT
 
 
 def _should_skip(name: str) -> bool:

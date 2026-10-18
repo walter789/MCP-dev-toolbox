@@ -6,8 +6,8 @@ from pathlib import Path
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-from config import WORKSPACE_ROOT
-from indexer.chunker import CodeChunk, chunk_workspace
+from mcp_dev_toolbox.config import WORKSPACE_ROOT
+from mcp_dev_toolbox.indexer.chunker import CodeChunk, chunk_workspace
 
 MODEL_NAME = "all-MiniLM-L6-v2"  # ~80 MB, fast, good general-purpose embeddings
 INDEX_DIR = WORKSPACE_ROOT / ".mcp_index"

@@ -1,0 +1,46 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mcp-dev-toolbox"
+version = "0.1.0"
+description = "MCP server with fully local semantic code search, git history and file tools for Claude, Cursor and any MCP client"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Prateek Pal" }]
+keywords = ["mcp", "mcp-server", "model-context-protocol", "semantic-search", "code-search", "claude", "cursor"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development",
+]
+dependencies = [
+    "mcp[cli]>=1.0.0,<2",
+    "python-dotenv>=1.0.0",
+    "sentence-transformers>=3.0.0",
+    "numpy>=1.26.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/walter789/MCP-dev-toolbox"
+Issues = "https://github.com/walter789/MCP-dev-toolbox/issues"
+
+[project.scripts]
+mcp-dev-toolbox = "mcp_dev_toolbox.server:main"
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pillow>=10"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["mcp_dev_toolbox"]
+
+[tool.hatch.build.targets.sdist]
+include = ["mcp_dev_toolbox", "tests", "server.py", "README.md", "LICENSE", "pyproject.toml", "requirements.txt"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

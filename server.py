@@ -1,40 +1,9 @@
-import os
+"""Run the server from a source checkout: `python server.py`.
 
-from mcp.server.fastmcp import FastMCP
-
-_host = os.getenv("HOST", "0.0.0.0")
-_port = int(os.getenv("PORT", "8000"))
-
-mcp = FastMCP(
-    "dev-toolbox",
-    instructions=(
-        "A developer utility server for analyzing local codebases. "
-        "Provides git history, file inspection, code search, and structured prompt templates."
-    ),
-    host=_host,
-    port=_port,
-)
-
-# Tools, resources, and prompts are registered by importing their modules.
-# Each module calls register(mcp) to attach its handlers.
-from tools import git_tools, file_tools, code_tools, semantic_search  # noqa: E402
-from resources import handlers as resource_handlers                    # noqa: E402
-from prompts import templates as prompt_templates                      # noqa: E402
-
-git_tools.register(mcp)
-file_tools.register(mcp)
-code_tools.register(mcp)
-semantic_search.register(mcp)
-resource_handlers.register(mcp)
-prompt_templates.register(mcp)
+Kept so existing client configs that point at server.py keep working.
+Installed users can run the `mcp-dev-toolbox` command instead.
+"""
+from mcp_dev_toolbox.server import main
 
 if __name__ == "__main__":
-    transport = os.getenv("TRANSPORT", "stdio")
-    if transport == "sse":
-        # HTTP/SSE mode — used when deployed to a cloud host (Railway, Render, etc.)
-        host = os.getenv("HOST", "0.0.0.0")
-        port = int(os.getenv("PORT", "8000"))
-        mcp.run(transport="sse")
-    else:
-        # stdio mode — used for local Claude Desktop / Cursor integration
-        mcp.run(transport="stdio")
+    main()

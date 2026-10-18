@@ -6,7 +6,7 @@ from typing import Optional
 
 from mcp.server.fastmcp import FastMCP
 
-from config import EXCLUDED_DIRS, WORKSPACE_ROOT
+from mcp_dev_toolbox.config import EXCLUDED_DIRS, WORKSPACE_ROOT
 
 
 def _resolve_safe(rel_path: str) -> tuple[Path, str | None]:
@@ -49,7 +49,7 @@ def register(mcp: FastMCP) -> None:
                 for i, line in enumerate(text.splitlines(), 1):
                     m = pattern.search(line)
                     if m:
-                        rel = fpath.relative_to(WORKSPACE_ROOT)
+                        rel = fpath.relative_to(WORKSPACE_ROOT).as_posix()
                         results.append(f"{rel}:{i}  [{m.group(1)}] {m.group(2).strip()}")
 
         return "\n".join(results) if results else "No TODO/FIXME/HACK/NOTE comments found."
@@ -85,7 +85,7 @@ def register(mcp: FastMCP) -> None:
                     continue
                 for i, line in enumerate(text.splitlines(), 1):
                     if regex.search(line):
-                        rel = fpath.relative_to(WORKSPACE_ROOT)
+                        rel = fpath.relative_to(WORKSPACE_ROOT).as_posix()
                         results.append(f"{rel}:{i}: {line.rstrip()}")
                         if len(results) >= 200:
                             results.append("... (truncated at 200 matches)")
@@ -169,6 +169,6 @@ def register(mcp: FastMCP) -> None:
         lines = []
         for mtime, fpath in found:
             ts = datetime.fromtimestamp(mtime, tz=timezone.utc).strftime("%Y-%m-%d %H:%M")
-            rel = fpath.relative_to(WORKSPACE_ROOT)
+            rel = fpath.relative_to(WORKSPACE_ROOT).as_posix()
             lines.append(f"{ts}  {rel}")
         return "\n".join(lines)
