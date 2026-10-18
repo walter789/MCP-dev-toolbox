@@ -7,6 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 ![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)
 ![MCP](https://img.shields.io/badge/MCP-server-8A2BE2.svg)
+[![PyPI](https://img.shields.io/pypi/v/mcp-dev-toolbox.svg)](https://pypi.org/project/mcp-dev-toolbox/)
 ![Runs locally](https://img.shields.io/badge/semantic%20search-100%25%20local-orange.svg)
 
 An MCP server for Claude Desktop, Claude Code, Cursor and any other MCP client. Its headline feature is **local semantic code search**: find code *by meaning* ("where do we validate auth tokens?") using on-device embeddings — no API key, no code leaving your machine. Alongside it you get git history, diffs, blame, file inspection, and ready-made prompts for code review and commit messages.
@@ -21,13 +22,34 @@ An MCP server for Claude Desktop, Claude Code, Cursor and any other MCP client. 
 
 ### Quick start
 
+Install from PyPI:
+
 ```bash
-git clone https://github.com/walter789/MCP-dev-toolbox.git
-cd MCP-dev-toolbox
-pip install -r requirements.txt
+pip install mcp-dev-toolbox
 ```
 
-Then point your MCP client at `server.py` with `WORKSPACE_ROOT` set to the project you want to explore (full config below), and ask:
+Then add it to your MCP client, pointing `WORKSPACE_ROOT` at the project you want to explore. For Claude Desktop or Cursor:
+
+```json
+{
+  "mcpServers": {
+    "dev-toolbox": {
+      "command": "mcp-dev-toolbox",
+      "env": { "WORKSPACE_ROOT": "/absolute/path/to/your/project" }
+    }
+  }
+}
+```
+
+Or with [uv](https://docs.astral.sh/uv/), no separate install step: use `"command": "uvx", "args": ["mcp-dev-toolbox"]`.
+
+For Claude Code:
+
+```bash
+claude mcp add dev-toolbox -e WORKSPACE_ROOT=/absolute/path/to/your/project -- mcp-dev-toolbox
+```
+
+The first `build_index` downloads the embedding model once (~80 MB); after that everything runs offline. Then ask:
 
 > *"Build the index, then find where we handle database connection errors."*
 
@@ -45,7 +67,7 @@ Then point your MCP client at `server.py` with `WORKSPACE_ROOT` set to the proje
 
 ## Setup
 
-### 1. Clone and install
+### 1. Clone and install (from source)
 
 ```bash
 git clone https://github.com/walter789/MCP-dev-toolbox.git
